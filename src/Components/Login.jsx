@@ -174,7 +174,7 @@ const Login = ({ onLogin }) => {
             localStorage.setItem("username", username);
             
             onLogin();
-
+            console.log('token:',decodedToken);
             if (role === 'Admin') {
                 navigate('/admin-panel', { replace: true });
             } else {
