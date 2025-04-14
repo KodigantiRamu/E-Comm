@@ -4,7 +4,7 @@ import { FaUser, FaSearch, FaHome, FaShoppingCart } from 'react-icons/fa';
 import { useSearch } from './SearchContext';
 import './Navbar.css';
 
-const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
+const Navbar = ({ isLoggedIn, setIsLoggedIn, cartCount }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const { searchTerm, setSearchTerm } = useSearch();
   const navigate = useNavigate();
@@ -63,7 +63,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
               </div>
             )}
           </div>
-          <Link to={isLoggedIn ? "/home" : "/"} className="brand-link">
+          <Link to="/home" className="brand-link">
             <h1 className="brand-name">E-Shop</h1>
           </Link>
         </div>
@@ -90,7 +90,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
           </Link>
           <Link to="/cart" className="nav-link">
             <FaShoppingCart />
-            <span>Cart</span>
+            <span>Cart ({cartCount})</span>
           </Link>
           <Link to="/about" className="nav-link">
             <span>About Us</span>

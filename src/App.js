@@ -17,12 +17,13 @@ import ForgotPassword from './Components/ForgotPassword';
 import AdminLayout from './Components/Admin/AdminLayout';
 import AdminDashboard from './Components/Admin/AdminDashboard';
 import AdminProducts from './Components/Admin/AdminProducts';
-import ProductDetails from './Components/ProductDetails'; // If you have this component
+import ProductDetails from './Components/ProductDetails';
 import './App.css';
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
     const [isLoading, setIsLoading] = useState(true);
+    const [cart, setCart] = useState([]);
 
     useEffect(() => {
         const checkAuth = () => {
@@ -33,239 +34,46 @@ function App() {
         checkAuth();
     }, []);
 
-    // Layout component for user routes
-    const Layout = ({ children }) => {
-        return (
-            <>
-                <Navbar 
-                    isLoggedIn={isLoggedIn} 
-                    setIsLoggedIn={setIsLoggedIn}
-                />
-                <div className="main-content">
-                    {children}
-                </div>
-            </>
-        );
+    const addToCart = (product) => {
+        setCart((prevCart) => [...prevCart, product]);
     };
 
-    // Admin Route component
-    const AdminRoute = ({ children }) => {
-        if (isLoading) {
-            return (
-                <div className="loading-spinner">
-                    <div className="spinner"></div>
-                </div>
-            );
-        }
+    const Layout = ({ children }) => (
+        <>
+            <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} cartCount={cart.length} />
+            <div className="main-content">{children}</div>
+        </>
+    );
 
-        const token = localStorage.getItem('token');
-        const role = localStorage.getItem('role');
-
-        if (!token || role !== 'Admin') {
-            return <Navigate to="/login" replace />;
-        }
-
-        return <AdminLayout>{children}</AdminLayout>;
-    };
-
-    // Protected Route component for regular users
     const ProtectedRoute = ({ children }) => {
-        if (isLoading) {
-            return (
-                <div className="loading-spinner">
-                    <div className="spinner"></div>
-                </div>
-            );
-        }
+        if (isLoading) return <div className="loading-spinner"><div className="spinner"></div></div>;
 
         const token = localStorage.getItem('token');
-        const role = localStorage.getItem('role');
-
-        if (!token) {
-            return <Navigate to="/login" replace />;
-        }
-
-        if (role === 'Admin') {
-            return <Navigate to="/admin-panel" replace />;
-        }
+        if (!token) return <Navigate to="/login" replace />;
 
         return <Layout>{children}</Layout>;
     };
-
-    // Public Route component
-    const PublicRoute = ({ children }) => {
-        if (isLoading) {
-            return (
-                <div className="loading-spinner">
-                    <div className="spinner"></div>
-                </div>
-            );
-        }
-
-        const token = localStorage.getItem('token');
-        const role = localStorage.getItem('role');
-
-        if (token) {
-            if (role === 'Admin') {
-                return <Navigate to="/admin-panel" replace />;
-            }
-            return <Navigate to="/home" replace />;
-        }
-
-        return <Layout>{children}</Layout>;
-    };
-
-    if (isLoading) {
-        return (
-            <div className="loading-spinner">
-                <div className="spinner"></div>
-            </div>
-        );
-    }
 
     return (
         <SearchProvider>
             <Router>
                 <div className="app-container">
                     <Routes>
-                        {/* Public Routes */}
-                        <Route 
-                            path="/login" 
-                            element={
-                                <PublicRoute>
-                                    <Login onLogin={() => setIsLoggedIn(true)} />
-                                </PublicRoute>
-                            } 
-                        />
-                        <Route 
-                            path="/register" 
-                            element={
-                                <PublicRoute>
-                                    <Register />
-                                </PublicRoute>
-                            } 
-                        />
-                        <Route 
-                            path="/forgot-password" 
-                            element={
-                                <PublicRoute>
-                                    <ForgotPassword />
-                                </PublicRoute>
-                            } 
-                        />
-
-                        {/* Admin Routes */}
-                        <Route
-                            path="/admin-panel"
-                            element={
-                                <AdminRoute>
-                                    <AdminDashboard />
-                                </AdminRoute>
-                            }
-                        />
-                        <Route
-                            path="/admin-panel/products"
-                            element={
-                                <AdminRoute>
-                                    <AdminProducts />
-                                </AdminRoute>
-                            }
-                        />
-
-                        {/* User Protected Routes */}
-                        <Route
-                            path="/home"
-                            element={
-                                <ProtectedRoute>
-                                    <Home />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/product/:productId"
-                            element={
-                                <ProtectedRoute>
-                                    <ProductDetails />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/cart"
-                            element={
-                                <ProtectedRoute>
-                                    <Cart />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/about"
-                            element={
-                                <ProtectedRoute>
-                                    <About />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/contact"
-                            element={
-                                <ProtectedRoute>
-                                    <Contact />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/profile"
-                            element={
-                                <ProtectedRoute>
-                                    <UserProfile />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/orders"
-                            element={
-                                <ProtectedRoute>
-                                    <Orders />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/wishlist"
-                            element={
-                                <ProtectedRoute>
-                                    <Wishlist />
-                                </ProtectedRoute>
-                            }
-                        />
-
-                        {/* Default Route */}
-                        <Route 
-                            path="/" 
-                            element={
-                                isLoggedIn ? 
-                                    localStorage.getItem('role') === 'Admin' ?
-                                        <Navigate to="/admin-panel" replace /> :
-                                        <Navigate to="/home" replace /> :
-                                    <Navigate to="/login" replace />
-                            } 
-                        />
-
-                        {/* 404 Route */}
-                        <Route 
-                            path="*" 
-                            element={
-                                <div className="error-page">
-                                    <h1>404 - Page Not Found</h1>
-                                    <p>The page you're looking for doesn't exist.</p>
-                                    <button 
-                                        onClick={() => window.history.back()}
-                                        className="back-button"
-                                    >
-                                        Go Back
-                                    </button>
-                                </div>
-                            } 
-                        />
+                        <Route path="/" element={<Layout><Home addToCart={addToCart} /></Layout>} />
+                        <Route path="/login" element={<Login onLogin={() => setIsLoggedIn(true)} />} />
+                        <Route path="/register" element={<Register />} />
+                        <Route path="/forgot-password" element={<ForgotPassword />} />
+                        <Route path="/admin-panel" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
+                        <Route path="/admin-panel/products" element={<AdminLayout><AdminProducts /></AdminLayout>} />
+                        <Route path="/home" element={<Layout><Home addToCart={addToCart} /></Layout>} />
+                        <Route path="/product/:productId" element={<Layout><ProductDetails /></Layout>} />
+                        <Route path="/cart" element={<ProtectedRoute><Cart cart={cart} /></ProtectedRoute>} />
+                        <Route path="/about" element={<ProtectedRoute><About /></ProtectedRoute>} />
+                        <Route path="/contact" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
+                        <Route path="/profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
+                        <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
+                        <Route path="/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
+                        <Route path="*" element={<div className="error-page"><h1>404 - Page Not Found</h1><p>The page you're looking for doesn't exist.</p><button onClick={() => window.history.back()} className="back-button">Go Back</button></div>} />
                     </Routes>
                 </div>
             </Router>

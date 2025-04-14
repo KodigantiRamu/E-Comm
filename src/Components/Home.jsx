@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSearch } from './SearchContext';
 import "./Home.css";
 
-function Home() {
+function Home({ addToCart }) {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
   const { searchTerm, selectedCategory, setSelectedCategory } = useSearch();
@@ -21,6 +21,24 @@ function Home() {
 
   const handleCategoryChange = (event) => {
     setSelectedCategory(event.target.value);
+  };
+
+  const handleAddToCart = (product) => {
+    if (!localStorage.getItem('token')) {
+      navigate('/login');
+    } else {
+      addToCart(product);
+      console.log(`Product ${product.productId} added to cart`);
+    }
+  };
+
+  const handleAddToWishlist = (productId) => {
+    if (!localStorage.getItem('token')) {
+      navigate('/login');
+    } else {
+      // Add to wishlist logic
+      console.log(`Product ${productId} added to wishlist`);
+    }
   };
 
   const filteredProducts = products.filter((product) => {
@@ -59,9 +77,12 @@ function Home() {
             <div
               key={product.productId}
               className="product-item"
-              onClick={() => handleProductClick(product.productId)}
             >
-              <img src={product.imgurl} alt={product.productName} />
+              <img 
+                src={product.imgurl} 
+                alt={product.productName} 
+                onClick={() => handleProductClick(product.productId)}
+              />
               <h3>{product.productName}</h3>
               <h4>₹{product.price}</h4>
               <p className={`product-card-rating ${getRatingClass(product.averageRating)}`}>
@@ -69,8 +90,8 @@ function Home() {
                 <span className="star">★</span>
               </p>
               <div className="controls">
-                <button>Add to Cart</button>
-                <span className="wishlist-icon">♡</span>
+                <button onClick={() => handleAddToCart(product)}>Add to Cart</button>
+                <span className="wishlist-icon" onClick={() => handleAddToWishlist(product.productId)}>♡</span>
               </div>
             </div>
           ))}
