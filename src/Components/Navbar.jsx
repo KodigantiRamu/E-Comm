@@ -51,12 +51,12 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn, cartCount }) => {
                 <Link to="/orders" className="dropdown-link">Orders</Link>
                 <Link to="/wishlist" className="dropdown-link">Wishlist</Link>
                 {isLoggedIn ? (
-                  <button 
+                  <Link 
                     onClick={handleLogout} 
                     className="dropdown-link logout-button"
                   >
                     Logout
-                  </button>
+                  </Link>
                 ) : (
                   <Link to="/login" className="dropdown-link">Login</Link>
                 )}

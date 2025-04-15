@@ -128,34 +128,6 @@ body {
   }
    
    
-  /* Navbar.css */
-/*    
-  .navbar {
-    background-color: #92bae4;
-    color: white;
-    padding: 15px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
-   
-  .navbar h1 {
-    margin: 0;
-    font-size: 24px;
-  }
-   
-  .navbar a {
-    color: white;
-    text-decoration: none;
-    margin: 0 15px;
-    font-size: 16px;
-  }
-   
-  .navbar a:hover {
-    text-decoration: underline;
-  } */
-   
    .product-card-rating {
     display: inline-flex;
     align-items: center;
